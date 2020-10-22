@@ -32,3 +32,30 @@ class LoginViewSet(ViewSet):
             return Response({'message':'invalid credentials'},401)
         except Exception as e:
             return Response({'data': '', 'message': str(e)}, 500)
+        
+
+class ProfileViewSet(ViewSet):
+
+    def partial_update(self, request, pk=None):
+
+        try:
+            user_detail = user_reg.objects.get(pk=pk)
+            print(pk)
+            serializer = RegisterSerializer(user_detail,data=request.data, partial=True)
+
+            if not serializer.is_valid():
+                return Response({'data':'internal server error','message':'error aa gyi'},500)
+
+            serializer.save()
+
+        except Exception as e:
+
+            return Response('some exception occured' + str(e))
+
+        return Response('record Updated successfully')
+
+    def retrieve(self,request, pk=None):
+
+        queryset = user_reg.objects.get(pk=pk)
+        serializer_class = RegisterSerializer(queryset)
+        return Response(serializer_class.data)
